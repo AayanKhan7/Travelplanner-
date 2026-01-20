@@ -5,8 +5,9 @@ import axios from 'axios'
  * Handles all HTTP requests to the Express server
  */
 
-// Base URL for API - uses proxy configured in vite.config.js
-const API_BASE_URL = '/api'
+// ✅ Production backend URL (Render)
+const API_BASE_URL =
+  'https://ai-travel-planner-backend-60h7.onrender.com/api'
 
 /**
  * Generate travel itinerary based on user preferences
@@ -15,16 +16,23 @@ const API_BASE_URL = '/api'
  */
 export const generateItinerary = async (preferences) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/generate-itinerary`, preferences)
+    const response = await axios.post(
+      `${API_BASE_URL}/generate-itinerary`,
+      preferences
+    )
     return response.data.data
   } catch (error) {
     // Handle different error scenarios
     if (error.response) {
-      // Server responded with error status
-      throw new Error(error.response.data.message || 'Server error occurred')
+      // Server responded with an error status
+      throw new Error(
+        error.response.data.message || 'Server error occurred'
+      )
     } else if (error.request) {
       // Request made but no response received
-      throw new Error('Unable to reach server. Please check your connection.')
+      throw new Error(
+        'Unable to reach server. Please check your connection.'
+      )
     } else {
       // Something else went wrong
       throw new Error('An unexpected error occurred')

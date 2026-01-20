@@ -10,10 +10,37 @@ dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 5000
 
+// --------------------
+// ✅ CORS CONFIGURATION (FIXED)
+// --------------------
+const allowedOrigins = [
+  process.env.ALLOWED_ORIGINS
+]
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (Postman, server-to-server)
+      if (!origin) return callback(null, true)
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true)
+      } else {
+        return callback(new Error('Not allowed by CORS'))
+      }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+  })
+)
+
+// ✅ VERY IMPORTANT: handle preflight requests
+app.options('*', cors())
+
+// --------------------
 // Middleware
-app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS || 'http://localhost:3000' || '/frontend'
-}))
+// --------------------
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -23,7 +50,9 @@ app.use((req, res, next) => {
   next()
 })
 
+// --------------------
 // Health check endpoint
+// --------------------
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
@@ -32,10 +61,14 @@ app.get('/api/health', (req, res) => {
   })
 })
 
+// --------------------
 // API Routes
+// --------------------
 app.use('/api', itineraryRoutes)
 
+// --------------------
 // 404 handler
+// --------------------
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -43,7 +76,9 @@ app.use((req, res) => {
   })
 })
 
+// --------------------
 // Error handling middleware
+// --------------------
 app.use((err, req, res, next) => {
   console.error('Error:', err)
   res.status(err.status || 500).json({
@@ -53,7 +88,9 @@ app.use((err, req, res, next) => {
   })
 })
 
+// --------------------
 // Start server
+// --------------------
 app.listen(PORT, () => {
   console.log('='.repeat(50))
   console.log(`🚀 AI Travel Planner API Server`)

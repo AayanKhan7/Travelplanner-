@@ -6,97 +6,64 @@ import itineraryRoutes from './routes/itinerary.js'
 // Load environment variables
 dotenv.config()
 
-// Initialize Express app
 const app = express()
 const PORT = process.env.PORT || 5000
 
-// --------------------
-// ✅ CORS CONFIGURATION (FIXED)
-// --------------------
-const allowedOrigins = [
-  process.env.ALLOWED_ORIGINS
-]
-
+// --------------------------------------------------
+// ✅ SIMPLE & WORKING CORS CONFIG (RECOMMENDED)
+// --------------------------------------------------
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (Postman, server-to-server)
-      if (!origin) return callback(null, true)
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true)
-      } else {
-        return callback(new Error('Not allowed by CORS'))
-      }
-    },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
+    origin: process.env.ALLOWED_ORIGINS,
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type'],
   })
 )
 
-// ✅ VERY IMPORTANT: handle preflight requests
+// ✅ Explicit preflight handling
 app.options('*', cors())
 
-// --------------------
+// --------------------------------------------------
 // Middleware
-// --------------------
+// --------------------------------------------------
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-// Request logging middleware
+// Logging
 app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`)
+  console.log(`${req.method} ${req.originalUrl}`)
   next()
 })
 
-// --------------------
-// Health check endpoint
-// --------------------
+// --------------------------------------------------
+// Health check
+// --------------------------------------------------
 app.get('/api/health', (req, res) => {
-  res.json({
+  res.status(200).json({
     status: 'ok',
     message: 'AI Travel Planner API is running',
-    timestamp: new Date().toISOString()
   })
 })
 
-// --------------------
-// API Routes
-// --------------------
+// --------------------------------------------------
+// Routes
+// --------------------------------------------------
 app.use('/api', itineraryRoutes)
 
-// --------------------
-// 404 handler
-// --------------------
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: 'Route not found'
-  })
-})
-
-// --------------------
-// Error handling middleware
-// --------------------
+// --------------------------------------------------
+// Error handling
+// --------------------------------------------------
 app.use((err, req, res, next) => {
-  console.error('Error:', err)
-  res.status(err.status || 500).json({
+  console.error(err)
+  res.status(500).json({
     success: false,
-    message: err.message || 'Internal server error',
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    message: 'Internal Server Error',
   })
 })
 
-// --------------------
+// --------------------------------------------------
 // Start server
-// --------------------
+// --------------------------------------------------
 app.listen(PORT, () => {
-  console.log('='.repeat(50))
-  console.log(`🚀 AI Travel Planner API Server`)
-  console.log(`📡 Running on http://localhost:${PORT}`)
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`)
-  console.log('='.repeat(50))
+  console.log(`🚀 Server running on port ${PORT}`)
 })
-
-export default app

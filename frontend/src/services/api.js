@@ -5,9 +5,9 @@ import axios from 'axios'
  * Handles all HTTP requests to the Express server
  */
 
-// ✅ Production backend URL (Render)
+// ✅ Production backend URL (Render) – include /api prefix so routes resolve
 const API_BASE_URL =
-  'https://travelplanner-1-8ja7.onrender.com'
+  'https://travelplanner-1-8ja7.onrender.com/api'
 
 /**
  * Generate travel itinerary based on user preferences

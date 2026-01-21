@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 5000
 // --------------------------------------------------
 app.use(
   cors({
-    origin: process.env.ALLOWED_ORIGINS,
+    origin: "https://ai-travel-planner-students.netlify.app",
     methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type'],
   })

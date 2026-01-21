@@ -7,7 +7,7 @@ import axios from 'axios'
 
 // ✅ Production backend URL (Render)
 const API_BASE_URL =
-  'https://ai-travel-planner-backend-60h7.onrender.com/api'
+  'https://travelplanner-1-8ja7.onrender.com'
 
 /**
  * Generate travel itinerary based on user preferences
